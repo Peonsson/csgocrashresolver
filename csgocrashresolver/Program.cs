@@ -15,15 +15,30 @@ namespace csgocrashresolver
                 Process[] dialogWindow = Process.GetProcessesByName("WerFault");    // if we have a dialog window then close it
                 if (dialogWindow.Length > 0)                                            
                 {
+                    ProcessStartInfo processStartInfo = new ProcessStartInfo();     // then restart csgo with restartcsgo powershell script
+                    processStartInfo.FileName = "powershell.exe";
+                    processStartInfo.Arguments = "-ExecutionPolicy ByPass -File C:\\Dropbox\\znipeobserver\\powershell\\obswaitingforgame.ps1";
+                    processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
+                    processStartInfo.CreateNoWindow = true;
+
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " setting waiting for game..");
+                    using (Process obswaitingforgame = Process.Start(processStartInfo))
+                    {
+                        obswaitingforgame.WaitForExit();
+                        //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") +  " obswaitingforgame.ps1 exit code: " + restartcsgo.ExitCode);
+                    }
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 2 seconds to prevent errors..");
+                    Thread.Sleep(2000);
+
                     for (int i = dialogWindow.Length - 1; i >= 0; i--)
                     {
                         while (!dialogWindow[i].HasExited)
                         {
-                            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " closing dialog..");
                             dialogWindow[i].CloseMainWindow();
                             Thread.Sleep(100);
                         }
-                    } 
+                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " closing dialog " + i + "..");
+                    }
 
                     Thread.Sleep(5000);
                     Process[] csgo = Process.GetProcessesByName("csgo");            // if the dialog didn't close csgo then close all csgo
@@ -37,7 +52,7 @@ namespace csgocrashresolver
                         }
                     }
 
-                    ProcessStartInfo processStartInfo = new ProcessStartInfo();     // then restart csgo with restartcsgo powershell script
+                    processStartInfo = new ProcessStartInfo();     // then restart csgo with restartcsgo powershell script
                     processStartInfo.FileName = "powershell.exe";
                     processStartInfo.Arguments = "-ExecutionPolicy ByPass -File C:\\Dropbox\\znipeobserver\\powershell\\restartcsgo.ps1";
                     processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
@@ -47,10 +62,10 @@ namespace csgocrashresolver
                     using (Process restartcsgo = Process.Start(processStartInfo))
                     {
                         restartcsgo.WaitForExit();
-                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") +  " restartcsgo.ps1 exit code: " + restartcsgo.ExitCode);
+                        //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") +  " restartcsgo.ps1 exit code: " + restartcsgo.ExitCode);
                     }
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 3 seconds to prevent errors..");
-                    Thread.Sleep(3000);
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 10 seconds to prevent errors..");
+                    Thread.Sleep(10000);
 
                     processStartInfo = new ProcessStartInfo();                  // then set OBS CS scene
                     processStartInfo.FileName = "powershell.exe";
@@ -62,7 +77,7 @@ namespace csgocrashresolver
                     using (Process obscsgo = Process.Start(processStartInfo))
                     {
                         obscsgo.WaitForExit();
-                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " restartcsgo.ps1 exit code: " + obscsgo.ExitCode);
+                        //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " obscsgo.ps1 exit code: " + obscsgo.ExitCode);
                     }
                     Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 3 seconds to prevent errors..");
                     Thread.Sleep(3000);
