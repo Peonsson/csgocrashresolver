@@ -47,9 +47,9 @@ namespace csgocrashresolver
                         while (!csgo[i].HasExited)
                         {
                             csgo[i].Kill();
-                            Thread.Sleep(200);
-                            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " has csgo[" + i + "] exited? " + csgo[i].HasExited);
+                            Thread.Sleep(100);
                         }
+                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " killed csgo: " + i);
                     }
 
                     processStartInfo = new ProcessStartInfo();     // then restart csgo with restartcsgo powershell script
