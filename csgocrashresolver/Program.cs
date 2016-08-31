@@ -34,12 +34,12 @@ namespace csgocrashresolver
                 Thread.Sleep(100);
                 Process[] dialogWindow = Process.GetProcessesByName("WerFault");
 
-                // if we have a dialog window close it
                 if (dialogWindow.Length > 0)
                 {
                     string text = DateTime.Now.ToString("[HH:mm:ss] ") + username + ":  crash detected";
                     string url = "https://slack.com/api/chat.postMessage?token=" + token + "&channel=production&text= " + text + "&username=ZnipeBOT&pretty=1";
 
+                    // notify on slack
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
@@ -48,7 +48,7 @@ namespace csgocrashresolver
                         Console.WriteLine("failed to notify on slack!");
                     }
 
-                    // then restart csgo with restartcsgo powershell script
+                    // set waiting for game
                     ProcessStartInfo processStartInfo = new ProcessStartInfo();
                     processStartInfo.FileName = "powershell.exe";
                     processStartInfo.Arguments = "-ExecutionPolicy ByPass -File C:\\Dropbox\\znipeobserver\\powershell\\obswaitingforgame.ps1";
@@ -63,6 +63,7 @@ namespace csgocrashresolver
                     Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " sleeping for 2 seconds to prevent errors..");
                     Thread.Sleep(2000);
 
+                    // close dialog windows
                     for (int i = dialogWindow.Length - 1; i >= 0; i--)
                     {
                         while (!dialogWindow[i].HasExited)
