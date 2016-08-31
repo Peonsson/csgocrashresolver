@@ -27,15 +27,6 @@ namespace csgocrashresolver
             string token = items[0].token;
             string username = "znipedell--";
             username += items[0].port;
-            string text = DateTime.Now.ToString("[HH:mm:ss] ") + username + ":  crash detected";
-            string url = "https://slack.com/api/chat.postMessage?token=" + token + "&channel=production&text= " + text + "&username=ZnipeBOT&pretty=1";
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            if (!response.StatusCode.ToString().Equals("OK"))
-            {
-                Console.WriteLine("failed to notify on slack!");
-            }
 
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " running csgo crash resolver.. \n");
             while (true)
@@ -46,7 +37,16 @@ namespace csgocrashresolver
                 // if we have a dialog window close it
                 if (dialogWindow.Length > 0)
                 {
+                    string text = DateTime.Now.ToString("[HH:mm:ss] ") + username + ":  crash detected";
+                    string url = "https://slack.com/api/chat.postMessage?token=" + token + "&channel=production&text= " + text + "&username=ZnipeBOT&pretty=1";
 
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                    if (!response.StatusCode.ToString().Equals("OK"))
+                    {
+                        Console.WriteLine("failed to notify on slack!");
+                    }
 
                     // then restart csgo with restartcsgo powershell script
                     ProcessStartInfo processStartInfo = new ProcessStartInfo();
