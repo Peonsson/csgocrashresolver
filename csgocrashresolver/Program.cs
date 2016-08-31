@@ -29,7 +29,7 @@ namespace csgocrashresolver
                 Thread.Sleep(100);
                 Process[] dialogWindow = Process.GetProcessesByName("WerFault");
 
-                // if we have a dialog window then close it
+                // if we have a dialog window close it
                 if (dialogWindow.Length > 0)
                 {
                     string text = DateTime.Now.ToString("[HH:mm:ss]") + "  crash detected";
@@ -69,6 +69,7 @@ namespace csgocrashresolver
 
                     Thread.Sleep(5000);
                     Process[] csgo = Process.GetProcessesByName("csgo");
+
                     // if the dialog didn't close csgo then close csgo
                     for (int i = csgo.Length - 1; i >= 0; i--)
                     {
@@ -80,7 +81,7 @@ namespace csgocrashresolver
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " killed csgo: " + i);
                     }
 
-                    // then restart csgo with restartcsgo powershell script
+                    // restart csgo with restartcsgo powershell script
                     processStartInfo = new ProcessStartInfo();
                     processStartInfo.FileName = "powershell.exe";
                     processStartInfo.Arguments = "-ExecutionPolicy ByPass -File C:\\Dropbox\\znipeobserver\\powershell\\restartcsgo.ps1";
@@ -95,7 +96,7 @@ namespace csgocrashresolver
                     Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 10 seconds to prevent errors..");
                     Thread.Sleep(10000);
 
-                    // then set OBS CS scene
+                    // set OBS CS scene
                     processStartInfo = new ProcessStartInfo();
                     processStartInfo.FileName = "powershell.exe";
                     processStartInfo.Arguments = "-ExecutionPolicy ByPass -File C:\\Dropbox\\znipeobserver\\powershell\\obscsgo.ps1";
