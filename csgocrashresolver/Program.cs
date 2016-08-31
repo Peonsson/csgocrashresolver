@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Net;
+using System.IO;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace csgocrashresolver
 {
@@ -8,14 +12,38 @@ namespace csgocrashresolver
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:FFF") + " running cs crash resolver.. \n");
+            List<Settings> items;
+            using (StreamReader r = new StreamReader("C:\\settings.json"))
+            {
+                string json = r.ReadToEnd();
+                items = JsonConvert.DeserializeObject<List<Settings>>(json);
+            }
+
+            string token = items[0].token;
+            string username = "znipedell--";
+            username += items[0].port;
+
+            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:FFF") + " running csgo crash resolver.. \n");
             while (true)
             {
                 Thread.Sleep(100);
-                Process[] dialogWindow = Process.GetProcessesByName("WerFault");    // if we have a dialog window then close it
-                if (dialogWindow.Length > 0)                                            
+                Process[] dialogWindow = Process.GetProcessesByName("WerFault");
+
+                // if we have a dialog window then close it
+                if (dialogWindow.Length > 0)
                 {
-                    ProcessStartInfo processStartInfo = new ProcessStartInfo();     // then restart csgo with restartcsgo powershell script
+                    string text = DateTime.Now.ToString("[HH:mm:ss]") + "  crash detected";
+                    string url = "https://slack.com/api/chat.postMessage?token=" + token + "&channel=production&text= " + text + "&username=" + username + "&pretty=1";
+
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    if (!response.StatusCode.ToString().Equals("OK"))
+                    {
+                        Console.WriteLine("failed to notify on slack!");
+                    }
+
+                    // then restart csgo with restartcsgo powershell script
+                    ProcessStartInfo processStartInfo = new ProcessStartInfo();
                     processStartInfo.FileName = "powershell.exe";
                     processStartInfo.Arguments = "-ExecutionPolicy ByPass -File C:\\Dropbox\\znipeobserver\\powershell\\obswaitingforgame.ps1";
                     processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
@@ -25,7 +53,6 @@ namespace csgocrashresolver
                     using (Process obswaitingforgame = Process.Start(processStartInfo))
                     {
                         obswaitingforgame.WaitForExit();
-                        //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") +  " obswaitingforgame.ps1 exit code: " + restartcsgo.ExitCode);
                     }
                     Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 2 seconds to prevent errors..");
                     Thread.Sleep(2000);
@@ -41,7 +68,8 @@ namespace csgocrashresolver
                     }
 
                     Thread.Sleep(5000);
-                    Process[] csgo = Process.GetProcessesByName("csgo");            // if the dialog didn't close csgo then close all csgo
+                    Process[] csgo = Process.GetProcessesByName("csgo");
+                    // if the dialog didn't close csgo then close csgo
                     for (int i = csgo.Length - 1; i >= 0; i--)
                     {
                         while (!csgo[i].HasExited)
@@ -52,7 +80,8 @@ namespace csgocrashresolver
                         Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " killed csgo: " + i);
                     }
 
-                    processStartInfo = new ProcessStartInfo();     // then restart csgo with restartcsgo powershell script
+                    // then restart csgo with restartcsgo powershell script
+                    processStartInfo = new ProcessStartInfo();
                     processStartInfo.FileName = "powershell.exe";
                     processStartInfo.Arguments = "-ExecutionPolicy ByPass -File C:\\Dropbox\\znipeobserver\\powershell\\restartcsgo.ps1";
                     processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
@@ -62,12 +91,12 @@ namespace csgocrashresolver
                     using (Process restartcsgo = Process.Start(processStartInfo))
                     {
                         restartcsgo.WaitForExit();
-                        //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") +  " restartcsgo.ps1 exit code: " + restartcsgo.ExitCode);
                     }
                     Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 10 seconds to prevent errors..");
                     Thread.Sleep(10000);
 
-                    processStartInfo = new ProcessStartInfo();                  // then set OBS CS scene
+                    // then set OBS CS scene
+                    processStartInfo = new ProcessStartInfo();
                     processStartInfo.FileName = "powershell.exe";
                     processStartInfo.Arguments = "-ExecutionPolicy ByPass -File C:\\Dropbox\\znipeobserver\\powershell\\obscsgo.ps1";
                     processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
@@ -77,7 +106,6 @@ namespace csgocrashresolver
                     using (Process obscsgo = Process.Start(processStartInfo))
                     {
                         obscsgo.WaitForExit();
-                        //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " obscsgo.ps1 exit code: " + obscsgo.ExitCode);
                     }
                     Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 3 seconds to prevent errors..");
                     Thread.Sleep(3000);
@@ -85,5 +113,10 @@ namespace csgocrashresolver
                 }
             }
         }
+    }
+    public class Settings
+    {
+        public string token;
+        public string port;
     }
 }
