@@ -8,6 +8,11 @@ using Newtonsoft.Json;
 
 namespace csgocrashresolver
 {
+    public class Settings
+    {
+        public string token;
+        public string port;
+    }
     class Program
     {
         static void Main(string[] args)
@@ -22,8 +27,17 @@ namespace csgocrashresolver
             string token = items[0].token;
             string username = "znipedell--";
             username += items[0].port;
+            string text = DateTime.Now.ToString("[HH:mm:ss] ") + username + ":  crash detected";
+            string url = "https://slack.com/api/chat.postMessage?token=" + token + "&channel=production&text= " + text + "&username=ZnipeBOT&pretty=1";
 
-            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:FFF") + " running csgo crash resolver.. \n");
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            if (!response.StatusCode.ToString().Equals("OK"))
+            {
+                Console.WriteLine("failed to notify on slack!");
+            }
+
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " running csgo crash resolver.. \n");
             while (true)
             {
                 Thread.Sleep(100);
@@ -32,15 +46,7 @@ namespace csgocrashresolver
                 // if we have a dialog window close it
                 if (dialogWindow.Length > 0)
                 {
-                    string text = DateTime.Now.ToString("[HH:mm:ss]") + "  crash detected";
-                    string url = "https://slack.com/api/chat.postMessage?token=" + token + "&channel=production&text= " + text + "&username=" + username + "&pretty=1";
 
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                    if (!response.StatusCode.ToString().Equals("OK"))
-                    {
-                        Console.WriteLine("failed to notify on slack!");
-                    }
 
                     // then restart csgo with restartcsgo powershell script
                     ProcessStartInfo processStartInfo = new ProcessStartInfo();
@@ -49,12 +55,12 @@ namespace csgocrashresolver
                     processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
                     processStartInfo.CreateNoWindow = true;
 
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " setting waiting for game..");
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " setting waiting for game..");
                     using (Process obswaitingforgame = Process.Start(processStartInfo))
                     {
                         obswaitingforgame.WaitForExit();
                     }
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 2 seconds to prevent errors..");
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " sleeping for 2 seconds to prevent errors..");
                     Thread.Sleep(2000);
 
                     for (int i = dialogWindow.Length - 1; i >= 0; i--)
@@ -64,7 +70,7 @@ namespace csgocrashresolver
                             dialogWindow[i].CloseMainWindow();
                             Thread.Sleep(100);
                         }
-                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " closing dialog " + i + "..");
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " closing dialog " + i + "..");
                     }
 
                     Thread.Sleep(5000);
@@ -78,7 +84,7 @@ namespace csgocrashresolver
                             csgo[i].Kill();
                             Thread.Sleep(100);
                         }
-                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " killed csgo: " + i);
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " killed csgo: " + i);
                     }
 
                     // restart csgo with restartcsgo powershell script
@@ -88,12 +94,12 @@ namespace csgocrashresolver
                     processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
                     processStartInfo.CreateNoWindow = true;
 
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " restarting cs go..");
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " restarting cs go..");
                     using (Process restartcsgo = Process.Start(processStartInfo))
                     {
                         restartcsgo.WaitForExit();
                     }
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 10 seconds to prevent errors..");
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " sleeping for 10 seconds to prevent errors..");
                     Thread.Sleep(10000);
 
                     // set OBS CS scene
@@ -103,21 +109,16 @@ namespace csgocrashresolver
                     processStartInfo.WindowStyle = ProcessWindowStyle.Normal;
                     processStartInfo.CreateNoWindow = true;
 
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " setting obs scene..");
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " setting obs scene..");
                     using (Process obscsgo = Process.Start(processStartInfo))
                     {
                         obscsgo.WaitForExit();
                     }
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " sleeping for 3 seconds to prevent errors..");
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " sleeping for 3 seconds to prevent errors..");
                     Thread.Sleep(3000);
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:FFF") + " csgo restart logic completed. watching for new crash..\n");
+                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " csgo restart logic completed. watching for new crash..\n");
                 }
             }
         }
-    }
-    public class Settings
-    {
-        public string token;
-        public string port;
     }
 }
