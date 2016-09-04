@@ -40,12 +40,20 @@ namespace csgocrashresolver
                     string url = "https://slack.com/api/chat.postMessage?token=" + token + "&channel=production&text= " + text + "&username=ZnipeBOT&pretty=1";
 
                     // notify on slack
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                    if (!response.StatusCode.ToString().Equals("OK"))
+                    try
                     {
-                        Console.WriteLine("failed to notify on slack!");
+                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                        {
+                            if (!response.StatusCode.ToString().Equals("OK"))
+                            {
+                                Console.WriteLine("failed to notify on slack!");
+                            }
+                        }
+                    }
+                    catch (WebException ex)
+                    {
+                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + username + ":exception message:  " + ex.Message);
                     }
 
                     // set waiting for game
