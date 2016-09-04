@@ -109,7 +109,7 @@ namespace csgocrashresolver
                         restartcsgo.WaitForExit();
                     }
                     Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " sleeping for 10 seconds to prevent errors..");
-                    Thread.Sleep(10000);
+                    Thread.Sleep(6000);
 
                     // set OBS CS scene
                     processStartInfo = new ProcessStartInfo();
