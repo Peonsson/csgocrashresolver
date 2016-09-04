@@ -50,7 +50,7 @@ namespace csgocrashresolver
                             if (!response.StatusCode.ToString().Equals("OK"))
                             {
                                 Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("failed to notify on slack!");
+                                Console.WriteLine("FATAL ERROR. Response status code != OK. Might have failed to notify on slack!");
                                 Console.ResetColor();
                             }
                         }
@@ -58,7 +58,7 @@ namespace csgocrashresolver
                     catch (WebException ex)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + username + ":exception message:  " + ex.Message);
+                        Console.WriteLine("FATAL ERROR. WebException message:" + ex.Message);
                         Console.ResetColor();
                     }
 
@@ -74,7 +74,6 @@ namespace csgocrashresolver
                     {
                         obswaitingforgame.WaitForExit();
                     }
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " sleeping for 2 seconds to prevent errors..");
                     Thread.Sleep(2000);
 
                     // close dialog windows
@@ -114,7 +113,6 @@ namespace csgocrashresolver
                     {
                         restartcsgo.WaitForExit();
                     }
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " sleeping for 10 seconds to prevent errors..");
                     Thread.Sleep(6000);
 
                     // set OBS CS scene
@@ -129,7 +127,6 @@ namespace csgocrashresolver
                     {
                         obscsgo.WaitForExit();
                     }
-                    Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " sleeping for 3 seconds to prevent errors..");
                     Thread.Sleep(3000);
                     Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " csgo restart logic completed. watching for new crash..\n");
                 }
