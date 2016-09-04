@@ -28,7 +28,9 @@ namespace csgocrashresolver
             string username = "znipedell--";
             username += items[0].port;
 
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss]") + " running csgo crash resolver.. \n");
+            Console.ResetColor();
             while (true)
             {
                 Thread.Sleep(100);
@@ -47,13 +49,17 @@ namespace csgocrashresolver
                         {
                             if (!response.StatusCode.ToString().Equals("OK"))
                             {
+                                Console.ForegroundColor = ConsoleColor.Red;
                                 Console.WriteLine("failed to notify on slack!");
+                                Console.ResetColor();
                             }
                         }
                     }
                     catch (WebException ex)
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + username + ":exception message:  " + ex.Message);
+                        Console.ResetColor();
                     }
 
                     // set waiting for game
